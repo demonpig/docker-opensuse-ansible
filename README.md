@@ -14,3 +14,13 @@ This repo is based on my forked [AlmaLinux 9 image](https://github.com/demonpig/
   ```bash
   podman build -f ./Containerfile --no-cache -t localhost/docker-opensuse-ansible:latest .
   ```
+
+### Usage
+
+- Run the image with one of the following commands
+  ```
+  docker run -it --rm -d -v /sys/fs/cgroup:/sys/fs/cgroup:rw --privileged localhost/docker-opensuse-ansible:latest
+  ```
+  ```
+  podman run -it --rm -d -v /sys/fs/cgroup:/sys/fs/cgroup:rw --privileged localhost/docker-opensuse-ansible:latest
+  ```
