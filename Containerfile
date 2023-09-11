@@ -7,11 +7,7 @@ ENV pip_packages "ansible"
 
 # Install requirements.
 RUN zypper ref && zypper dup -y \
-  && zypper install -y \
-      systemd \      
-      python3 \
-      python3-pip \
-      sudo \
+  && zypper install -y systemd sudo update-alternatives\
   && zypper clean -a
 
 # Install systemd -- See https://hub.docker.com/_/centos/
@@ -25,11 +21,16 @@ rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
 rm -f /lib/systemd/system/basic.target.wants/*;\
 rm -f /lib/systemd/system/anaconda.target.wants/*;
 
-# Setup virtual environment and configure ansible to use it
-ADD ./files/ / 
-RUN python3 -m venv /opt/ansible \
-  && /opt/ansible/bin/pip install --upgrade pip setuptools \
-  && /opt/ansible/bin/pip install $pip_packages
+# Install package dependences for Ansible
+# openjdk libs are for ansible-rulebook
+RUN zypper ref \
+  && zypper install -y python311 java-17-openjdk-headless \
+  && zypper clean -a
+
+# Setup virtual environment
+ADD ./files/ /
+RUN update-alternatives --install /usr/bin/python3 python /usr/bin/python3.11 1 \
+  && sh /usr/local/sbin/setup-env.sh
 
 ENV PATH="/opt/ansible/bin:$PATH"
 
